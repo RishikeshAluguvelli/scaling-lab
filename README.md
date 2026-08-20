@@ -25,19 +25,25 @@ training-time test — each explained and scored on the ratio that decides every
 launches a fresh server per configuration, and a production guide for choosing and
 tuning a method (K, temperature, memory headroom, when to skip speculation entirely).
 
-**Measured (Qwen2.5-7B-Instruct, NVIDIA H100 80GB, vLLM 0.19.0, greedy, 256 tok × 10 prompts):**
+**Measured (Qwen2.5-7B-Instruct, NVIDIA H100 80GB, vLLM 0.27.1, greedy, 256 tok × 10 prompts
+— executed notebook with full outputs checked in):**
 
 | Config | Throughput | Latency | Speedup |
 |---|---:|---:|---:|
-| baseline | 162.1 tok/s | 6.17 ms/tok | 1.00× |
-| n-gram (K=5) | 139.8 tok/s | 7.16 ms/tok | **0.86× — slower** |
-| EAGLE-3 (K=3) | 334.6 tok/s | 2.99 ms/tok | **2.06×** |
+| baseline | 160.9 tok/s | 6.21 ms/tok | 1.00× |
+| n-gram (K=5) | 135.9 tok/s | 7.36 ms/tok | **0.84× — slower** |
+| EAGLE-3 (K=3) | 299.8 tok/s | 3.34 ms/tok | **1.86×** |
 
-Three findings worth internalizing: the baseline lands at 68% of the 239 tok/s bandwidth
-roofline (which is what a *healthy* baseline looks like); n-gram speculation **loses 14%**
-on open-ended prompts because free-but-weak proposals still pay verification bookkeeping;
-and EAGLE-3's per-prompt spread (264–425 tok/s) tracks text predictability exactly as
-acceptance-rate theory predicts. Speculation is a workload decision, not a checkbox.
+An earlier run on vLLM 0.19.0 measured 162.1 / 139.8 / 334.6 tok/s — the ordering is
+stable across two vLLM major versions. Findings worth internalizing: the baseline lands
+at 67% of the 239 tok/s bandwidth roofline (what a *healthy* baseline looks like);
+n-gram speculation **loses ~15%** on open-ended prompts because free-but-weak proposals
+still pay verification bookkeeping; and EAGLE-3's per-prompt spread (259–359 tok/s)
+tracks text predictability exactly as acceptance-rate theory predicts. The from-scratch
+demo measured a **77% acceptance rate** for GPT-2 drafting GPT-2-large — at wall-clock
+parity, because the cache-free teaching implementation spends on drafting exactly what
+acceptance saves; the vLLM numbers show what that acceptance buys with real KV caching.
+Speculation is a workload decision, not a checkbox.
 
 ## Notebook 2 — Splitting the Matmul: Tensor Parallelism
 
