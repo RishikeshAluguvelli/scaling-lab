@@ -1,0 +1,6 @@
+torch>=2.4
+transformers>=4.49
+numpy
+requests
+# vLLM benchmark section (speculative_decoding.ipynb, 80GB-class GPU):
+# vllm
