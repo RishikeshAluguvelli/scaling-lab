@@ -17,9 +17,13 @@ The full arc: the roofline argument (7B bf16 ≈ 1 FLOP/byte vs the H100's ~300 
 ridge → decode is bandwidth-bound), the draft-and-verify algorithm, the rejection-sampling
 proof that output quality is mathematically untouched (the min/residual terms telescope
 back to exactly p(x)), a runnable **from-scratch implementation** (GPT-2 drafting for
-GPT-2-large, with measured acceptance rate), the proposal zoo (draft models, n-gram
-lookup, Medusa, EAGLE 1/2/3), and a **vLLM benchmark harness** that launches a fresh
-server per configuration.
+GPT-2-large, with measured acceptance rate), the **full proposal zoo** — draft models,
+n-gram/prompt-lookup, suffix decoding (local + global suffix trees), Medusa's
+tree-verified prediction heads, and the three EAGLE generations including EAGLE-3's
+training-time test — each explained and scored on the ratio that decides everything
+(*tokens accepted per verify ÷ proposal cost*), a **vLLM benchmark harness** that
+launches a fresh server per configuration, and a production guide for choosing and
+tuning a method (K, temperature, memory headroom, when to skip speculation entirely).
 
 **Measured (Qwen2.5-7B-Instruct, NVIDIA H100 80GB, vLLM 0.19.0, greedy, 256 tok × 10 prompts):**
 
